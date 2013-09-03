@@ -2,7 +2,7 @@ package dsl.reactive.optimizations
 
 import scala.virtualization.lms.common.{Base, EffectExp}
 import dsl.reactive.syntaxops.{SignalSyntax, VarSyntax, DepHolderOps}
-import dsl.reactive.PhantomTypes._
+import dsl.reactive.phantom._
 
 trait InferredSignals extends Base {
   this: SignalSyntax =>

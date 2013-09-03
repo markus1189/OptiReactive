@@ -6,7 +6,7 @@ import dsl.reactive.syntaxops._
 import dsl.reactive.optimizations._
 import dsl.reactive.generalpurpose._
 
-import dsl.reactive.PhantomTypes._
+import dsl.reactive.phantom._
 
 /** This trait defines the accepted syntactic constructs for programs
   * written in the DSL
@@ -82,7 +82,7 @@ trait ScalaGenReactivity extends ScalaGenBase with ScalaGenEffect {
   val IR: ReactivityExp
   import IR._
 
-  def dsmap(s: String) = s.replaceAll("dsl.reactive", "dsl.reactive.simplereactive")
+  def dsmap(s: String) = s.replaceAll("dsl.reactive.phantom", "dsl.reactive.simplereactive")
 
   override def remap[A](m: Manifest[A]): String = dsmap(super.remap(m))
 

@@ -1,7 +1,7 @@
 package dsl.reactive.generalpurpose
 
 import scala.virtualization.lms.common.{Base,EffectExp,ScalaGenEffect,ScalaGenBase}
-import dsl.reactive.PhantomTypes._
+import dsl.reactive.phantom._
 
 trait PointSyntax extends Base {
   object Point {

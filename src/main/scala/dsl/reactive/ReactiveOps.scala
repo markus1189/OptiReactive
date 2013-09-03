@@ -6,6 +6,9 @@ import dsl.reactive.syntaxops._
 import dsl.reactive.optimizations._
 import dsl.reactive.generalpurpose._
 
+/** This trait defines the accepted syntactic constructs for programs
+  * written in the DSL
+  */
 trait Reactivity
     extends MeasureOps
     with ExpensiveOps
@@ -17,6 +20,9 @@ trait Reactivity
     with PointSyntax
     with RangeOps
 
+/** This trait has to provide the concrete implementations for the
+  * syntactically allowed constructs of the `Reactivity` trait
+  */
 trait ReactivityExp extends Reactivity
                     with MeasureOpsExp
                     with ExpensiveOpsExp
@@ -36,7 +42,8 @@ trait ReactivityExpOpt extends ReactivityExp {
   private def onlyConstants(dhs: Seq[Exp[DepHolder]]): Boolean =  {
     val syms: Seq[Sym[DepHolder]] = dhs.filter {
       case Sym(x) => true
-      case _ => false }.asInstanceOf[Seq[Sym[DepHolder]]]
+      case _ => false
+    }.asInstanceOf[Seq[Sym[DepHolder]]]
 
     val defs: Seq[Def[Any]] = syms.map(findDefinition(_)).map {
       case Some(TP(_,rhs)) => Some(rhs)
@@ -78,7 +85,7 @@ trait ScalaGenReactivity extends ScalaGenBase with ScalaGenEffect {
     case ReEvaluation(elem)     => emitValDef(sym, quote(elem) + ".forceReEval()")
     case GetDependentsList(dh)  => emitValDef(sym, quote(dh) + ".getDependentsList")
     case SetDepHolder(dh,value) => emitValDef(sym, quote(dh) + ".set(" + quote(value) + ")")
-    case VarCreation(v)         => emitValDef(sym, "Var(" + quote(v) + ")")
+    case VarCreation(v)         => emitValDef(sym, "ReactiveVar(" + quote(v) + ")")
     case SignalCreation(dhs,f)  => emitValDef(sym, "Signal(" + dhs.map(quote).mkString(", ") + ") { ")
                                      emitBlock(f)
                                      stream.println(quote(getBlockResult(f)) + "\n")

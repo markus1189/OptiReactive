@@ -31,6 +31,8 @@ trait AccessableDepHolder[+T] extends DepHolder {
 trait Dependent extends ReactiveEntity {
   private val dependOn: Buffer[DepHolder] = new ListBuffer()
 
+  def dependencies: Seq[DepHolder] = dependOn
+
   def addDependOn(dep: DepHolder) { dependOn += dep }
   def +> : DepHolder => Unit = addDependOn _
 

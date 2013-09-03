@@ -2,6 +2,7 @@ package dsl.reactive.optimizations
 
 import org.scalatest._
 import virtualization.lms.common.CompileScala
+import dsl.reactive.{simplereactive => sr}
 
 import dsl.reactive._
 
@@ -17,9 +18,9 @@ class InferenceSpec extends WordSpec with Matchers {
 
       val result = {
         prog.compile(prog.f).apply( () )
-      }.asInstanceOf[dsl.reactive.simplereactive.Behavior[Int]]
+      }.asInstanceOf[sr.Behavior[Int]]
 
-      result.get should equal(6)
+      result.dependencies should have length(3)
     }
   }
 }

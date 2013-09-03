@@ -80,13 +80,17 @@ trait ScalaGenReactivity extends ScalaGenBase with ScalaGenEffect {
   val IR: ReactivityExp
   import IR._
 
+  def dsmap(s: String) = s.replaceAll("dsl.reactive", "dsl.reactive.simplereactive")
+
+  override def remap[A](m: Manifest[A]): String = dsmap(super.remap(m))
+
   override def emitNode(sym: Sym[Any], node: Def[Any]): Unit =  node match {
     case AccessDepHolder(dh)    => emitValDef(sym, quote(dh) + ".get")
     case ReEvaluation(elem)     => emitValDef(sym, quote(elem) + ".forceReEval()")
     case GetDependentsList(dh)  => emitValDef(sym, quote(dh) + ".getDependentsList")
     case SetDepHolder(dh,value) => emitValDef(sym, quote(dh) + ".set(" + quote(value) + ")")
-    case VarCreation(v)         => emitValDef(sym, "ReactiveVar(" + quote(v) + ")")
-    case SignalCreation(dhs,f)  => emitValDef(sym, "Signal(" + dhs.map(quote).mkString(", ") + ") { ")
+    case VarCreation(v)         => emitValDef(sym, "dsl.reactive.simplereactive.ReactiveVar(" + quote(v) + ")")
+    case SignalCreation(dhs,f)  => emitValDef(sym, "dsl.reactive.simplereactive.Signal(" + dhs.map(quote).mkString(", ") + ") { ")
                                      emitBlock(f)
                                      stream.println(quote(getBlockResult(f)) + "\n")
                                    stream.println("}")

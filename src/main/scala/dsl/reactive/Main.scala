@@ -1,5 +1,4 @@
 import dsl.reactive._
-import dsl.reactive.simplereactive._
 import scala.virtualization.lms.common._
 
 trait ReactiveDSL extends Reactivity with ScalaOpsPkg with LiftScala

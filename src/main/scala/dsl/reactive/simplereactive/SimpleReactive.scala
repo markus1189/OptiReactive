@@ -17,7 +17,7 @@ trait DepHolder extends ReactiveEntity {
 
   def removeDependent(dep: Dependent) { dependents -= dep }
 
-  def notifyDependents() { dependents foreach (_.dependsOnChanged(this)) } /*<+PROPAGATION_ENABLED+>*/
+  def notifyDependents() { dependents.par.foreach(_.dependsOnChanged(this)) }
 
   def getDependentsList: List[ReactiveEntity] = dependents.toList
 }

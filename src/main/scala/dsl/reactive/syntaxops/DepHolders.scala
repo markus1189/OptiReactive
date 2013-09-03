@@ -1,4 +1,5 @@
 package dsl.reactive.syntaxops
+import language.implicitConversions
 import scala.virtualization.lms.common.Base
 import scala.virtualization.lms.common.EffectExp
 import dsl.reactive.phantom._

@@ -1,5 +1,6 @@
 package dsl.reactive.simplereactive
 
+import language.implicitConversions
 import scala.collection.mutable.Buffer
 import scala.collection.mutable.ListBuffer
 

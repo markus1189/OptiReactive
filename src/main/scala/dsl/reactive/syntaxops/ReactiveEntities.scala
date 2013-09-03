@@ -39,3 +39,14 @@ trait ReactiveEntityOps extends EffectExp {
   }
 
 }
+
+trait ScalaGenReactiveEntities extends ScalaGenReactiveBase {
+  val IR: ReactiveEntityOps
+  import IR._
+
+  override def emitNode(sym: Sym[Any], node: Def[Any]): Unit =  node match {
+    case ReEvaluation(elem) => emitValDef(sym, quote(elem) + ".forceReEval()")
+    case GetDependentsList(dh) => emitValDef(sym, quote(dh) + ".getDependentsList")
+    case _ => super.emitNode(sym,node)
+  }
+}

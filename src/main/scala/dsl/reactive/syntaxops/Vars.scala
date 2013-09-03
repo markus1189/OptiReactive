@@ -35,5 +35,17 @@ trait VarOps extends EffectExp {
   override def dep_holder_set[A:Manifest](
     dh: Exp[ReactiveVar[A]],
     value: Exp[A]): Exp[Unit] = reflectEffect(SetDepHolder(dh,value))
+}
 
+trait ScalaGenVars extends ScalaGenReactiveBase {
+  val IR: VarOps
+  import IR._
+
+  override def emitNode(sym: Sym[Any], node: Def[Any]): Unit = node match {
+    case VarCreation(v) => emitValDef(sym,
+      simpleReactivePkg + "ReactiveVar(" + quote(v) + ")")
+    case SetDepHolder(dh,value) => emitValDef(sym,
+      quote(dh) + ".set(" + quote(value) + ")")
+    case _ => super.emitNode(sym,node)
+  }
 }

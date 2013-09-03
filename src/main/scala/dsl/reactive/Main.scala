@@ -15,7 +15,7 @@ trait Program extends ReactiveDSL {
     val constant = ISignal { 55 }
 
     println(s.get)
-    constant
+    constant.get
   }
 }
 

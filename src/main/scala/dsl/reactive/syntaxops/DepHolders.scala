@@ -28,3 +28,13 @@ trait DepHolderOps extends EffectExp {
     dh: Exp[AccessableDepHolder[A]]): Exp[A] =
     reflectMutable(AccessDepHolder(dh))
 }
+
+trait ScalaGenDepHolders extends ScalaGenReactiveBase {
+  val IR: DepHolderOps
+  import IR._
+
+  override def emitNode(sym: Sym[Any], node: Def[Any]): Unit =  node match {
+    case AccessDepHolder(dh) => emitValDef(sym, quote(dh) + ".get")
+    case _ => super.emitNode(sym,node)
+  }
+}

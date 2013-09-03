@@ -8,6 +8,12 @@ import dsl.reactive.generalpurpose._
 
 import dsl.reactive.phantom._
 
+trait ReactiveDSL extends Reactivity with ScalaOpsPkg with LiftScala
+trait ReactiveDSLExp extends ReactiveDSL with ReactivityExpOpt with ScalaOpsPkgExp
+trait ReactiveDSLGen extends ScalaGenReactivityOpt with ScalaCodeGenPkg {
+  val IR: ReactiveDSLExp with ScalaOpsPkgExp
+}
+
 /** This trait defines the accepted syntactic constructs for programs
   * written in the DSL
   */

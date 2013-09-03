@@ -1,4 +1,4 @@
-package dsl.reactive
+package dsl.reactive.simplereactive
 
 import org.junit.Before
 import org.junit.Test

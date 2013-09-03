@@ -1,11 +1,7 @@
 package dsl.reactive.syntaxops
 import scala.virtualization.lms.common.Base
 import scala.virtualization.lms.common.EffectExp
-
-import dsl.reactive.{ AccessableDepHolder
-                    , ReactiveEntity
-                    , DepHolder
-                    }
+import dsl.reactive.PhantomTypes._
 
 trait DepHolderSyntax extends Base {
 

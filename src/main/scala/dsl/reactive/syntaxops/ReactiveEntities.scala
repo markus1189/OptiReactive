@@ -1,7 +1,7 @@
 package dsl.reactive.syntaxops
 
 import scala.virtualization.lms.common.{Base,EffectExp}
-import dsl.reactive.{ReactiveEntity}
+import dsl.reactive.PhantomTypes._
 
 trait ReactiveEntitySyntax extends Base {
 

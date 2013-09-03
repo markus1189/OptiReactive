@@ -6,6 +6,8 @@ import dsl.reactive.syntaxops._
 import dsl.reactive.optimizations._
 import dsl.reactive.generalpurpose._
 
+import dsl.reactive.PhantomTypes._
+
 /** This trait defines the accepted syntactic constructs for programs
   * written in the DSL
   */

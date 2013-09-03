@@ -10,21 +10,23 @@ import dsl.reactive.simplereactive._
 
 class SignalTestSuite extends AssertionsForJUnit with MockitoSugar {
 
-  var dh: simplereactive.DepHolder = _
-  var s1: simplereactive.Signal[Int] = _
-  var s2: simplereactive.Signal[Int] = _
-  var s3: simplereactive.Signal[Int] = _
+  var dh: DepHolder = _
+  var s1: Signal[Int] = _
+  var s2: Signal[Int] = _
+  var s3: Signal[Int] = _
 
-  @Before def initialize() {
+  @Before
+  def initialize() {
 
-    dh = new Object with simplereactive.DepHolder { def forceReEval {} }
-    s1 = mock[simplereactive.Signal[Int]]
-    s2 = mock[simplereactive.Signal[Int]]
-    s3 = mock[simplereactive.Signal[Int]]
+    dh = new Object with DepHolder { def forceReEval {} }
+    s1 = mock[Signal[Int]]
+    s2 = mock[Signal[Int]]
+    s3 = mock[Signal[Int]]
 
   }
 
-  @Test def dependencyHolderNotifiesDependentsWhenNotifyDependentsIsCalled() {
+  @Test
+  def dependencyHolderNotifiesDependentsWhenNotifyDependentsIsCalled() {
 
     dh.addDependent(s1)
     dh.addDependent(s2)
@@ -37,7 +39,8 @@ class SignalTestSuite extends AssertionsForJUnit with MockitoSugar {
 
   }
 
-  @Test def reEvaluateEvaluatesTheExpressionAndNotifiesDependentsOnlyIfExpressionChanges() {
+  @Test
+  def reEvaluateEvaluatesTheExpressionAndNotifiesDependentsOnlyIfExpressionChanges() {
 
     var i = 1
     var s = Signal[Int](s1) { i }

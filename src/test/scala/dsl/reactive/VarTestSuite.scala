@@ -10,19 +10,19 @@ import dsl.reactive.simplereactive._
 
 class VarTestSuite extends AssertionsForJUnit with MockitoSugar {
 
-  var v1: simplereactive.ReactiveVar[Int] = _
-  var v2: simplereactive.ReactiveVar[Int] = _
-  var s1: simplereactive.Signal[Int] = _
-  var s2: simplereactive.Signal[Int] = _
-  var s3: simplereactive.Signal[Int] = _
+  var v1: ReactiveVar[Int] = _
+  var v2: ReactiveVar[Int] = _
+  var s1: Signal[Int] = _
+  var s2: Signal[Int] = _
+  var s3: Signal[Int] = _
 
   @Before def initialize() {
 
     v1 = ReactiveVar(1)
     v2 = ReactiveVar(2)
-    s1 = mock[simplereactive.Signal[Int]]
-    s2 = mock[simplereactive.Signal[Int]]
-    s3 = mock[simplereactive.Signal[Int]]
+    s1 = mock[Signal[Int]]
+    s2 = mock[Signal[Int]]
+    s3 = mock[Signal[Int]]
   }
 
   @Test def getValAfterCreationReturnsInitializationValue() {

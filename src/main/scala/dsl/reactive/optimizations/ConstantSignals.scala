@@ -2,8 +2,8 @@ package dsl.reactive.optimizations
 
 import scala.virtualization.lms.common.EffectExp
 
-import dsl.reactive.{DepHolder, AccessableDepHolder, Behavior}
 import dsl.reactive.syntaxops.{SignalSyntax, SignalOps, DepHolderSyntax, DepHolderOps}
+import dsl.reactive.PhantomTypes._
 
 trait ConstantElimination extends EffectExp
     with SignalSyntax

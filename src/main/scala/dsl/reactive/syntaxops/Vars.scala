@@ -1,7 +1,7 @@
 package dsl.reactive.syntaxops
 
 import scala.virtualization.lms.common.{Base, EffectExp}
-import dsl.reactive.ReactiveVar
+import dsl.reactive.PhantomTypes._
 
 trait VarSyntax extends Base {
   implicit def toVarOps[A:Manifest](v: Rep[ReactiveVar[A]]): VarOps[A] = new VarOps(v)

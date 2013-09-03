@@ -2,7 +2,7 @@ import dsl.reactive._
 import dsl.reactive.simplereactive._
 import scala.virtualization.lms.common._
 
-trait ReactiveDSL extends Reactivity with ScalaOpsPkg
+trait ReactiveDSL extends Reactivity with ScalaOpsPkg with LiftScala
 trait ReactiveDSLExp extends ReactiveDSL with ReactivityExp with ScalaOpsPkgExp
 trait ReactiveDSLGen extends ScalaGenReactivity with ScalaCodeGenPkg {
   val IR: ReactiveDSLExp with ScalaOpsPkgExp
@@ -10,10 +10,10 @@ trait ReactiveDSLGen extends ScalaGenReactivity with ScalaCodeGenPkg {
 
 trait Program extends ReactiveDSL {
   def f(x : Rep[Unit]) = {
-    val root = ReactiveVar(unit(5))
+    val root = ReactiveVar(5)
     val s = ISignal { root.get + 1 }
 
-    s.get
+    println(s.get)
   }
 }
 
@@ -25,6 +25,5 @@ object Main extends App {
   }
 
   val f = prog.compile(prog.f)
-
-  println(f())
+  f()
 }

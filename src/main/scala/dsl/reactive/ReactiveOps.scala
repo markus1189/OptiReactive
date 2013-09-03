@@ -104,7 +104,7 @@ trait ScalaGenReactivityOpt extends ScalaGenReactivity {
 
   override def emitNode(sym: Sym[Any], node: Def[Any]): Unit =  node match {
     case ConstantAccess(f) => emitValDef(sym, quote(getBlockResult(f)))
-    case ConstantCreation(f) => emitValDef(sym, "Constant {")
+    case ConstantCreation(f) => emitValDef(sym, "dsl.reactive.simplereactive.Constant {")
                                   emitBlock(f)
                                   stream.println(quote(getBlockResult(f)) + "\n")
                                 stream.println("}")

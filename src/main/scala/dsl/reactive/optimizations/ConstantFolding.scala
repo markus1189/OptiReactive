@@ -4,20 +4,24 @@ import scala.virtualization.lms.common.{Base, EffectExp, ScalaGenEffect}
 import dsl.reactive.syntaxops.{SignalOps, DepHolderOps, DepHolderSyntax, ScalaGenReactiveBase}
 import dsl.reactive.phantom._
 
-
 trait ConstantFolding extends EffectExp with DepHolderSyntax with DepHolderOps {
   self: SignalOps =>
 
-  private def onlyConstants(dhs: Seq[Exp[DepHolder]]): Boolean =  {
-    val syms: Seq[Sym[DepHolder]] = dhs.filter {
+  private def onlyConstants(dhs: Seq[Exp[DepHolder]]): Boolean = {
+    def filterForSyms[A](in: Seq[Exp[A]]): Seq[Sym[A]] = in.filter {
       case Sym(x) => true
       case _ => false
-    }.asInstanceOf[Seq[Sym[DepHolder]]]
+    }.asInstanceOf[Seq[Sym[A]]] // this is safe due to the pattern match
 
-    val defs: Seq[Def[Any]] = syms.map(findDefinition(_)).map {
-      case Some(TP(_,rhs)) => Some(rhs)
-      case _ => None
-    }.filter(_.isDefined).map(_.get)
+    def retrieveDefinition[A](in: Seq[Sym[A]]): Seq[Def[Any]] = {
+      in.map(findDefinition(_)).map {
+        case Some(TP(_,rhs)) => Some(rhs)
+        case _ => None
+      }.filter(_.isDefined).map(_.get)
+    }
+
+    val syms = filterForSyms(dhs)
+    val defs = retrieveDefinition(syms)
 
     defs.forall {
       case ConstantCreation(_) => true

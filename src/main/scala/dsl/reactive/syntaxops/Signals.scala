@@ -4,10 +4,11 @@ import scala.virtualization.lms.common.{Base, EffectExp, ScalaGenFunctions, Func
 import dsl.reactive.phantom._
 import language.implicitConversions
 
+/** Defines Signal syntax, methods and code generators. */
 trait SignalSyntax extends Base {
 
+  /* Enabling signal.map(_ + 1) via implicit class*/
   implicit def toBehaviorOps[A:Manifest](s: Rep[Behavior[A]]) = new BehaviorOps(s)
-
   class BehaviorOps[A:Manifest](s: Rep[Behavior[A]]) {
     def map[B:Manifest](f: Rep[A] => Rep[B]) = mapping_behavior(s,f)
   }
@@ -16,6 +17,7 @@ trait SignalSyntax extends Base {
     f: Rep[A] => Rep[B]): Rep[Behavior[B]]
 
   object Signal {
+    /* The Signal expression factory method */
     def apply[A:Manifest](dhs: Rep[DepHolder]*)(f: => Rep[A]) =
       new_behavior(dhs, f)
   }
@@ -57,11 +59,13 @@ trait ScalaGenSignals extends ScalaGenReactiveBase with ScalaGenFunctions {
   import IR._
 
   override def emitNode(sym: Sym[Any], node: Def[Any]): Unit =  node match {
+    /* emit the stored block at the inside of the Signal expression */
     case SignalCreation(dhs,f)  => emitValDef(sym,
       simpleReactivePkg + "Signal(" + dhs.map(quote).mkString(", ") + ") { ")
         emitBlock(f)
         stream.println(quote(getBlockResult(f)) + "\n")
       stream.println("}")
+    /* mapping is provided by the underlying framework */
     case MappedBehavior(s,f) => emitValDef(sym, quote(s) + ".map(" + quote(f) + ")")
     case _ => super.emitNode(sym,node)
   }

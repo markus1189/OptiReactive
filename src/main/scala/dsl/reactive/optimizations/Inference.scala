@@ -4,6 +4,9 @@ import scala.virtualization.lms.common.{Base, EffectExp}
 import dsl.reactive.syntaxops.{SignalSyntax, VarSyntax, DepHolderOps}
 import dsl.reactive.phantom._
 
+/** Adds another Signal factory method, ISignal {}, that automatically infers
+    the dependencies, given an expression
+  */
 trait InferredSignals extends Base {
   this: SignalSyntax =>
 
@@ -21,6 +24,7 @@ trait InferredSignalsExp extends InferredSignals with EffectExp {
   override def new_inferred_signal[A:Manifest](f: => Exp[A]): Exp[Behavior[A]] =
     new_behavior(inferReactiveAccess(reifyEffects(f)), f)
 
+  /* Check the effectSyms of the Block for AccessDepHolder IR nodes */
   def inferReactiveAccess(bdy: Block[_]): List[Exp[DepHolder]] = {
       val effects = effectSyms(bdy)
       val onlySyms = effects.filter { case Sym(x) => true; case _ => false }

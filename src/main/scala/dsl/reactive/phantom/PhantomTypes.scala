@@ -1,5 +1,9 @@
 package dsl.reactive.phantom
 
+/** These types are kept abstract and serve only to guide LMS
+  * when checking for subtype relations
+  */
+
 trait ReactiveEntity
 trait DepHolder extends ReactiveEntity
 trait AccessableDepHolder[+A] extends DepHolder

@@ -1,4 +1,4 @@
-package dsl.reactive
+package dsl.reactive.auxiliary
 
 import scala.virtualization.lms.common._
 

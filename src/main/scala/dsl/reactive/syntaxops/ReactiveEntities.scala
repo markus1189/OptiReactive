@@ -4,6 +4,10 @@ import language.implicitConversions
 import scala.virtualization.lms.common.{Base,EffectExp}
 import dsl.reactive.phantom._
 
+/** This file defines the methods specific to ReactiveEntity, namely
+  * getDependentsList and forceReEval
+  */
+
 trait ReactiveEntitySyntax extends Base {
 
   implicit def toReactiveEntityOps(entity: Rep[ReactiveEntity]) =
@@ -13,7 +17,7 @@ trait ReactiveEntitySyntax extends Base {
     def getDependentsList: Rep[List[ReactiveEntity]] =
       reactive_entity_dependents_list(entity)
 
-    def reEvaluate() = re_evaluate(entity)
+    def forceReEval() = re_evaluate(entity)
   }
 
   def reactive_entity_dependents_list(

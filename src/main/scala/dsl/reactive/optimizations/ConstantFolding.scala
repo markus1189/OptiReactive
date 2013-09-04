@@ -4,9 +4,16 @@ import scala.virtualization.lms.common.{Base, EffectExp, ScalaGenEffect}
 import dsl.reactive.syntaxops.{SignalOps, DepHolderOps, DepHolderSyntax, ScalaGenReactiveBase}
 import dsl.reactive.phantom._
 
+/** A Constant is a reactive (Signal/Behavior), that does either:
+  * - depend on nothing
+  * - depend only on other constants
+  *
+  * in both cases, we can replace them with a special constant type
+  */
 trait ConstantFolding extends EffectExp with DepHolderSyntax with DepHolderOps {
   self: SignalOps =>
 
+  /* Check if all Expressions of the Seq are constants */
   private def onlyConstants(dhs: Seq[Exp[DepHolder]]): Boolean = {
     def filterForSyms[A](in: Seq[Exp[A]]): Seq[Sym[A]] = in.filter {
       case Sym(x) => true
@@ -29,6 +36,9 @@ trait ConstantFolding extends EffectExp with DepHolderSyntax with DepHolderOps {
     }
   }
 
+  /* Override the behavior factory method, to create Constants instead of Signals,
+   * if possible
+   */
   override def new_behavior[A:Manifest](
     dhs: Seq[Exp[DepHolder]], f: => Exp[A]): Exp[Behavior[A]] = {
 
@@ -55,11 +65,12 @@ trait ScalaGenConstantFolding extends ScalaGenReactiveBase with ScalaGenEffect {
 
   override def emitNode(sym: Sym[Any], node: Def[Any]): Unit =  node match {
     case ConstantAccess(f) => emitValDef(sym, quote(getBlockResult(f)))
-    case ConstantCreation(f) => emitValDef(sym, "dsl.reactive.simplereactive.Constant {")
-                                  emitBlock(f)
-                                  stream.println(quote(getBlockResult(f)) + "\n")
-                                stream.println("}")
+    /* Unfold the stored block inside of a Constant expression */
+    case ConstantCreation(f) => emitValDef(sym,
+      simpleReactivePkg + "Constant {")
+        emitBlock(f)
+        stream.println(quote(getBlockResult(f)) + "\n")
+      stream.println("}")
     case _ => super.emitNode(sym,node)
-
   }
 }

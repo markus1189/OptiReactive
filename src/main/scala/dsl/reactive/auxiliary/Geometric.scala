@@ -1,4 +1,4 @@
-package dsl.reactive.generalpurpose
+package dsl.reactive.auxiliary
 
 import scala.virtualization.lms.common.{Base,EffectExp,ScalaGenEffect,ScalaGenBase}
 import dsl.reactive.phantom._

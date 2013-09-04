@@ -4,18 +4,23 @@ import scala.virtualization.lms.common._
 
 import dsl.reactive.syntaxops._
 import dsl.reactive.optimizations._
-import dsl.reactive.generalpurpose._
+import dsl.reactive.auxiliary._
 
 import dsl.reactive.phantom._
 
+/** ReactiveDSL is the main trait that should be used by clients to write programs */
 trait ReactiveDSL extends Reactivity with ScalaOpsPkg with LiftScala
+
+/** ReactiveDSLExp and ReactiveDSLGen are required for the concrete implementations
+  * and the code generation
+  */
 trait ReactiveDSLExp extends ReactiveDSL with ReactivityExpOpt with ScalaOpsPkgExp
 trait ReactiveDSLGen extends ScalaGenReactivityOpt with ScalaCodeGenPkg {
   val IR: ReactiveDSLExp with ScalaOpsPkgExp
 }
 
 /** This trait defines the accepted syntactic constructs for programs
-  * written in the DSL
+  * written in the DSL, without lifting standard scala constructs
   */
 trait Reactivity
     extends MeasureOps
@@ -45,8 +50,7 @@ trait ReactivityExp extends Reactivity
                     with PointExp
                     with RangeOpsExp
 
-trait ReactivityExpOpt extends ReactivityExp with ConstantFolding
-
+/** */
 trait ScalaGenReactivity extends ScalaGenReactiveBase
     with ScalaGenEffect
     with ScalaGenReactiveEntities
@@ -58,6 +62,10 @@ trait ScalaGenReactivity extends ScalaGenReactiveBase
   import IR._
 }
 
+/** Like ReactivityExp but with ConstantFolding enabled */
+trait ReactivityExpOpt extends ReactivityExp with ConstantFolding
+
+/** Additional support for ConstantFolding code generation */
 trait ScalaGenReactivityOpt extends ScalaGenReactivity with ScalaGenConstantFolding {
   val IR: ReactivityExpOpt
   import IR._

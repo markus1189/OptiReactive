@@ -5,6 +5,10 @@ import dsl.reactive.syntaxops.VarSyntax
 import dsl.reactive._
 import dsl.reactive.phantom._
 
+/** This trait overloads the variable creation and assignment methods, to
+  * to use OptiReactive's ReactiveVars.
+  * The methods are provided by Scala-Virtualized and the LiftVariables trait
+  */
 trait TransparentReactivity extends Base {
   this: VarSyntax with LiftVariables =>
 

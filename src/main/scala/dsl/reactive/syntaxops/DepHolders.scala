@@ -4,8 +4,10 @@ import scala.virtualization.lms.common.Base
 import scala.virtualization.lms.common.EffectExp
 import dsl.reactive.phantom._
 
+/** This file defines the Syntax, Operations and Code Generators
+  * needed to access the value inside of DepHolders
+  */
 trait DepHolderSyntax extends Base {
-
   implicit def toAccessableDepHolderOps[A:Manifest](
     dh: Rep[AccessableDepHolder[A]]) =
       new AccessableDepHolderOps(dh)
@@ -16,7 +18,6 @@ trait DepHolderSyntax extends Base {
 
   def dep_holder_access[A:Manifest](dh: Rep[AccessableDepHolder[A]]): Rep[A]
 }
-
 
 trait DepHolderOps extends EffectExp {
   this: DepHolderSyntax =>

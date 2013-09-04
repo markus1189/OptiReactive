@@ -4,6 +4,10 @@ import language.implicitConversions
 import scala.virtualization.lms.common.{Base, EffectExp}
 import dsl.reactive.phantom._
 
+/** Defines syntax, methods and generators for ReactiveVars
+  * Note that Var instead of ReactiveVar as a name does not work out
+  * very well, because LMS has it's own Var type
+  */
 trait VarSyntax extends Base {
   implicit def toVarOps[A:Manifest](v: Rep[ReactiveVar[A]]): VarOps[A] = new VarOps(v)
   class VarOps[A:Manifest](v: Rep[ReactiveVar[A]]) {
@@ -44,6 +48,7 @@ trait ScalaGenVars extends ScalaGenReactiveBase {
   override def emitNode(sym: Sym[Any], node: Def[Any]): Unit = node match {
     case VarCreation(v) => emitValDef(sym,
       simpleReactivePkg + "ReactiveVar(" + quote(v) + ")")
+
     case SetDepHolder(dh,value) => emitValDef(sym,
       quote(dh) + ".set(" + quote(value) + ")")
     case _ => super.emitNode(sym,node)

@@ -23,8 +23,9 @@ trait DepHolder extends ReactiveEntity {
   def getDependentsList: List[ReactiveEntity] = dependents.toList
 }
 
-trait AccessableDepHolder[+T] extends DepHolder {
-  def get: T
+trait AccessableDepHolder[+A] extends DepHolder {
+  def get: A
+  def map[B](f: A => B): AccessableDepHolder[B]
 }
 
 /* A node that depends on other nodes */
@@ -46,32 +47,34 @@ object Dependent {
   implicit def fromExpression[T](exp: => T): Handler[T] = Handler(exp)
 }
 
-class ReactiveVar[T] private (initialValue: T) extends AccessableDepHolder[T] {
-  private var heldValue: T = initialValue
+class ReactiveVar[A] private (initialValue: A) extends AccessableDepHolder[A] {
+  private var heldValue: A = initialValue
 
   def get = heldValue
 
-  def set(newValue: T) {
+  def set(newValue: A) {
     if (newValue != heldValue) {
       heldValue = newValue
       notifyDependents()
     }
   }
 
-  def modify(f: T => T) = set(f(get))
+  def modify(f: A => A) = set(f(get))
+
+  def map[B](f: A => B): ReactiveVar[B] = ReactiveVar(f(initialValue))
 }
 
 object ReactiveVar {
-  def apply[T](initialValue: T) = new ReactiveVar(initialValue)
+  def apply[A](initialValue: A): ReactiveVar[A] = new ReactiveVar(initialValue)
 }
 
-trait Behavior[+T] extends Dependent with AccessableDepHolder[T]
+trait Behavior[+A] extends Dependent with AccessableDepHolder[A]
 
-class Signal[+T] private (depHolders: Seq[DepHolder])(expr: => T) extends Behavior[T] {
+class Signal[+A] private (depHolders: Seq[DepHolder])(expr: => A) extends Behavior[A] {
 
   private[this] var heldValue = expr
 
-  def get: T = heldValue
+  def get: A = heldValue
 
   depHolders foreach addDependOn
   depHolders foreach (_.addDependent(this)) // check
@@ -88,28 +91,30 @@ class Signal[+T] private (depHolders: Seq[DepHolder])(expr: => T) extends Behavi
   override def forceReEval() = reEvaluate()
 
   def dependsOnChanged(dep: DepHolder) { reEvaluate() }
+
+  def map[B](f: A => B): Signal[B] = Signal(depHolders: _*)(f(expr))
 }
 
 object Signal {
-  def apply[T](depHolders: DepHolder*)(expr: => T): Behavior[T] =
+  def apply[A](depHolders: DepHolder*)(expr: => A): Signal[A] =
     new Signal(depHolders)(expr)
 }
 
-class Constant[+T] private (expr: => T) extends Behavior[T] {
-  val const = expr
-
-  def get: T = const
+class Constant[+A] private (expr: A) extends Behavior[A] {
+  def get: A = expr
   def dependsOnChanged(dep: DepHolder): Unit = ()
+
+  def map[B](f: A => B): Constant[B] = Constant(f(expr))
 }
 
 object Constant {
-  def apply[T](expr: => T): Behavior[T] = new Constant(expr)
+  def apply[A](expr: => A): Constant[A] = new Constant(expr)
 }
 
 /**
   * A callback called when a signal changes
   */
-class Handler[T] private (exp: => T) extends Dependent {
+class Handler[A] private (exp: => A) extends Dependent {
   def dependsOnChanged(dep: DepHolder) = exp
   def reEvaluate = exp
   override def forceReEval() = exp
@@ -117,5 +122,5 @@ class Handler[T] private (exp: => T) extends Dependent {
 }
 
 object Handler{
-  def apply[T] (exp: => T) = new Handler(exp)
+  def apply[A] (exp: => A) = new Handler(exp)
 }

@@ -75,5 +75,40 @@ class SignalSpec extends WordSpec with Matchers {
 
       s.get should equal(0)  // still the old value, because no notifications occured
     }
+
+    "create a new signal when mapping" in {
+      val s = Signal() { 5 }
+      val s2 = s.map(_ + 1)
+
+    }
+  }
+
+  "A Signal" when {
+    "mapping" should {
+      "create a new Signal" in {
+        val s = Signal() { 1 }
+        s.map(_ + 1) should not equal(s)
+      }
+    }
+
+    "creating a new signal via map" should {
+      "update if dependencies change" in {
+        val v = ReactiveVar(5)
+        val s1 = Signal(v) { v.get }
+        val s2 = s1.map(_ + 1)
+
+        v.set(10)
+
+        s2.get should equal(11)
+      }
+
+      "create multiple signals" in {
+        var created = 0
+        val s = Signal() { created += 1; 1 } map (_ + 1) map (_ * 2) map (_ + 1)
+
+        created should equal(4)
+      }
+    }
+
   }
 }

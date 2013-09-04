@@ -6,12 +6,12 @@ import scala.collection.mutable.ListBuffer
 
 trait ReactiveEntity {
   def getDependentsList: List[ReactiveEntity]
-  def forceReEval(): Unit
+  def forceReEval(): Unit = ()
 }
 
 /* A node that has nodes that depend on it */
 trait DepHolder extends ReactiveEntity {
-  val dependents: Buffer[Dependent] = ListBuffer()
+  private val dependents: Buffer[Dependent] = ListBuffer()
 
   def addDependent(dep: Dependent) { dependents += dep }
   def <+ : Dependent => Unit = addDependent _
@@ -31,7 +31,7 @@ trait AccessableDepHolder[+T] extends DepHolder {
 trait Dependent extends ReactiveEntity {
   private val dependOn: Buffer[DepHolder] = new ListBuffer()
 
-  def dependencies: Seq[DepHolder] = dependOn
+  def getDependendOnList: List[DepHolder] = dependOn.toList
 
   def addDependOn(dep: DepHolder) { dependOn += dep }
   def +> : DepHolder => Unit = addDependOn _
@@ -40,8 +40,6 @@ trait Dependent extends ReactiveEntity {
 
   /* A node on which this one depends is changed */
   def dependsOnChanged(dep: DepHolder)
-
-  def forceReEval(): Unit
 }
 
 object Dependent {
@@ -61,8 +59,6 @@ class ReactiveVar[T] private (initialValue: T) extends AccessableDepHolder[T] {
   }
 
   def modify(f: T => T) = set(f(get))
-
-  def forceReEval() { }
 }
 
 object ReactiveVar {
@@ -89,7 +85,7 @@ class Signal[+T] private (depHolders: Seq[DepHolder])(expr: => T) extends Behavi
     }
   }
 
-  def forceReEval() = reEvaluate()
+  override def forceReEval() = reEvaluate()
 
   def dependsOnChanged(dep: DepHolder) { reEvaluate() }
 }
@@ -104,7 +100,6 @@ class Constant[+T] private (expr: => T) extends Behavior[T] {
 
   def get: T = const
   def dependsOnChanged(dep: DepHolder): Unit = ()
-  def forceReEval(): Unit = ()
 }
 
 object Constant {
@@ -117,8 +112,8 @@ object Constant {
 class Handler[T] private (exp: => T) extends Dependent {
   def dependsOnChanged(dep: DepHolder) = exp
   def reEvaluate = exp
-  def forceReEval() = exp
-  def getDependentsList = List.empty
+  override def forceReEval() = exp
+  override def getDependentsList = List.empty
 }
 
 object Handler{

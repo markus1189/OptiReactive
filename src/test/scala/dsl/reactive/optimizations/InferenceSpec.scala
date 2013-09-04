@@ -20,7 +20,7 @@ class InferenceSpec extends WordSpec with Matchers {
         prog.compile(prog.f).apply( () )
       }.asInstanceOf[sr.Behavior[Int]]
 
-      result.dependencies should have length(3)
+      result.getDependendOnList should have length(3)
     }
   }
 }

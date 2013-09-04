@@ -25,6 +25,7 @@ trait DepHolder extends ReactiveEntity {
 
 trait AccessableDepHolder[+A] extends DepHolder {
   def get: A
+  def apply(): A = get
   def map[B](f: A => B): AccessableDepHolder[B]
 }
 

@@ -44,10 +44,6 @@ trait Dependent extends ReactiveEntity {
   def dependsOnChanged(dep: DepHolder)
 }
 
-object Dependent {
-  implicit def fromExpression[T](exp: => T): Handler[T] = Handler(exp)
-}
-
 class ReactiveVar[A] private (initialValue: A) extends AccessableDepHolder[A] {
   private var heldValue: A = initialValue
 
@@ -80,7 +76,7 @@ class Signal[+A] private (depHolders: Seq[DepHolder])(expr: => A) extends Behavi
   depHolders foreach addDependOn
   depHolders foreach (_.addDependent(this)) // check
 
-  def reEvaluate() {
+  private def reEvaluate() {
     val evaluated = expr
 
     if (evaluated != heldValue) {
@@ -110,18 +106,4 @@ class Constant[+A] private (expr: A) extends Behavior[A] {
 
 object Constant {
   def apply[A](expr: => A): Constant[A] = new Constant(expr)
-}
-
-/**
-  * A callback called when a signal changes
-  */
-class Handler[A] private (exp: => A) extends Dependent {
-  def dependsOnChanged(dep: DepHolder) = exp
-  def reEvaluate = exp
-  override def forceReEval() = exp
-  override def getDependentsList = List.empty
-}
-
-object Handler{
-  def apply[A] (exp: => A) = new Handler(exp)
 }

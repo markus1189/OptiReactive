@@ -8,7 +8,7 @@ import dsl.reactive._
 
 class DSLSignalsSpec extends WordSpec with Matchers {
   "An OptiReactive Signal" should {
-    "support mapping" in {
+    "support changing the type via mapping" in {
       val prog = new MapSignal with ReactiveDSLExp with CompileScala { self =>
         override val codegen = new ReactiveDSLGen {
           val IR: self.type = self
@@ -20,16 +20,16 @@ class DSLSignalsSpec extends WordSpec with Matchers {
         prog.compile(prog.f).apply( () )
       }.asInstanceOf[sr.Behavior[Int]]
 
-      result.get should equal(42)
+      result.get should equal("a string")
     }
   }
 }
 
 trait MapSignal extends ReactiveDSL {
   def f(x : Rep[Unit]) = {
-    val v = ReactiveVar(41)
+    val v = ReactiveVar(42)
     val s = ISignal { v.get }
 
-    s.map(x => x + 1)
+    s.map { x: Rep[Int] => "a string"}
   }
 }

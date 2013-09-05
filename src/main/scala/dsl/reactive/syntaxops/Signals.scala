@@ -10,11 +10,11 @@ trait SignalSyntax extends Base {
   /* Enabling signal.map(_ + 1) via implicit class*/
   implicit def toBehaviorOps[A:Manifest](s: Rep[Behavior[A]]) = new BehaviorOps(s)
   class BehaviorOps[A:Manifest](s: Rep[Behavior[A]]) {
-    def map(f: Rep[A] => Rep[A]) = mapping_behavior(s,f)
+    def map[B:Manifest](f: Rep[A] => Rep[B]) = mapping_behavior(s,f)
   }
 
-  def mapping_behavior[A:Manifest](sig: Rep[Behavior[A]],
-    f: Rep[A] => Rep[A]): Rep[Behavior[A]]
+  def mapping_behavior[A:Manifest,B:Manifest](sig: Rep[Behavior[A]],
+    f: Rep[A] => Rep[B]): Rep[Behavior[B]]
 
   object Signal {
     /* The Signal expression factory method */
@@ -39,14 +39,13 @@ trait SignalOps extends EffectExp with FunctionsExp {
     f: => Exp[A]
   ): Exp[Behavior[A]] = SignalCreation(dhs, reifyEffects(f))
 
-  case class MappedBehavior[A:Manifest](
+  case class MappedBehavior[A:Manifest,B:Manifest](
     sig: Exp[Behavior[A]],
-    f: Rep[A => A]
-  ) extends Def[Behavior[A]]
+    f: Rep[A => B]
+  ) extends Def[Behavior[B]]
 
-  override def mapping_behavior[A:Manifest](sig: Exp[Behavior[A]],
-    f: Exp[A] => Exp[A]): Exp[Behavior[A]] = MappedBehavior(sig,doLambda(f))
-
+  override def mapping_behavior[A:Manifest,B:Manifest](sig: Exp[Behavior[A]],
+    f: Exp[A] => Exp[B]): Exp[Behavior[B]] = MappedBehavior(sig,doLambda(f))
 
   override def boundSyms(e: Any): List[Sym[Any]] = e match {
     case SignalCreation(dhs,body) => effectSyms(body)

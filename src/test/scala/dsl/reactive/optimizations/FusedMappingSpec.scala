@@ -28,6 +28,20 @@ class FusedMappingSpec extends WordSpec with Matchers {
 
       result.get should equal(43)
     }
+
+    "be able to change the type of the signal" in {
+      val prog = new FusedMappingChangeType with ReactiveDSLExp with CompileScala with FusedMappingsOps { self =>
+        override val codegen = new ReactiveDSLGen with ScalaGenFusedMapping {
+          val IR: self.type = self
+        }
+      }
+
+      val result = {
+        prog.compile(prog.f).apply( () )
+      }.asInstanceOf[sr.Behavior[String]]
+
+      result.get should equal("changed type from Int to String")
+    }
   }
 }
 
@@ -37,5 +51,12 @@ trait FusedMappingTestCase extends ReactiveDSL with FusedMappings {
     def inc(i: Rep[Int]): Rep[Int] = i + 1
 
     ISignal(v.get).fuseMap(inc).fuseMap(inc).fuseMap(inc).fuseMap(inc)
+  }
+}
+
+trait FusedMappingChangeType extends ReactiveDSL with FusedMappings {
+  def f(x : Rep[Unit]) = {
+    val s = ISignal { 5 }
+    s.fuseMap(_ => "changed type from Int to String")
   }
 }

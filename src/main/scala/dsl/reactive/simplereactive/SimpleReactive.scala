@@ -74,7 +74,7 @@ class Signal[+A] private (depHolders: Seq[DepHolder])(expr: => A) extends Behavi
   def get: A = heldValue
 
   depHolders foreach addDependOn
-  depHolders foreach (_.addDependent(this)) // check
+  depHolders foreach (_.addDependent(this))
 
   private def reEvaluate() {
     val evaluated = expr

@@ -7,44 +7,37 @@ import dsl.reactive.phantom._
 import language.implicitConversions
 
 trait FusedMappings extends Base {
-  def infix_fuseMap[A:Manifest](
-    b: Rep[Behavior[A]],
-    f: Rep[A] => Rep[A]
-  ) = fused_mapping(b,f)
-
   implicit def toFusedMapping[A:Manifest](b: Rep[Behavior[A]]) = new FusedMappingsOps(b)
   case class FusedMappingsOps[A:Manifest](b: Rep[Behavior[A]]) {
-    def fuseMap(f: Rep[A] => Rep[A]): Rep[Behavior[A]] = fused_mapping(b,f)
+    def fuseMap[B:Manifest](f: Rep[A] => Rep[B]): Rep[Behavior[B]] = fused_mapping(b,f)
   }
 
-  def fused_mapping[A:Manifest](
+  def fused_mapping[A:Manifest,B:Manifest](
     b: Rep[Behavior[A]],
-    f: Rep[A] => Rep[A]
-  ): Rep[Behavior[A]]
+    f: Rep[A] => Rep[B]
+  ): Rep[Behavior[B]]
 }
 
 trait FusedMappingsOps extends FusedMappings with FunctionsExp {
   this: SignalOps =>
 
-  case class FunctionComposition[A:Manifest](
-    f: Exp[A => A],
-    g: Exp[A => A]
-  ) extends Def[A => A]
+  case class FunctionComposition[A:Manifest,B:Manifest,C:Manifest](
+    f: Exp[A => B],
+    g: Exp[B => C]
+  ) extends Def[A => C]
 
-  def infix_compose[A:Manifest](f: Exp[A => A], g: Exp[A => A]): Exp[A => A] =
-    FunctionComposition(f,g)
+  def infix_compose[A:Manifest,B:Manifest,C:Manifest](
+    f: Exp[B => C], g: Exp[A => B]): Exp[A => C] =
+    FunctionComposition(g,f)
 
-  case class FuseMappedBehavior[A:Manifest](
+  case class FuseMappedBehavior[A:Manifest,B:Manifest](
     sig: Exp[Behavior[A]],
-    f: Rep[A => A]
-  ) extends Def[Behavior[A]]
+    f: Rep[A => B]
+  ) extends Def[Behavior[B]]
 
-  override def fused_mapping[A:Manifest](sig: Exp[Behavior[A]],
-    f: Exp[A] => Exp[A]): Exp[Behavior[A]] = sig match {
-    case Def(FuseMappedBehavior(a,b)) => {
-      val bNew = b.asInstanceOf[Exp[A => A]]
-      FuseMappedBehavior(a,doLambda(f)compose bNew)
-    }
+  override def fused_mapping[A:Manifest,B:Manifest](sig: Exp[Behavior[A]],
+    f: Exp[A] => Exp[B]): Exp[Behavior[B]] = sig match {
+    case Def(FuseMappedBehavior(a,b)) => FuseMappedBehavior(a,doLambda(f)compose b)
     case _ => FuseMappedBehavior(sig,doLambda(f))
   }
 }
@@ -54,7 +47,7 @@ trait ScalaGenFusedMapping extends ScalaGenReactiveBase {
   import IR._
 
   override def emitNode(sym: Sym[Any], node: Def[Any]): Unit =  node match {
-    case FunctionComposition(f,g) => emitValDef(sym,
+    case FunctionComposition(g,f) => emitValDef(sym,
       quote(f) + ".compose(" + quote(g) +")")
     case FuseMappedBehavior(s,f) => emitValDef(sym, quote(s) + ".map(" + quote(f) + ")")
     case _ => super.emitNode(sym,node)

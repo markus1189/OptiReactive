@@ -30,6 +30,7 @@ trait Reactivity
     with DepHolderSyntax
     with ReactiveEntitySyntax
     with InferredSignals
+    with FusedMappings
     with PointSyntax
     with RangeOps
 
@@ -47,6 +48,7 @@ trait ReactivityExp extends Reactivity
                     with SignalOps
                     with DepHolderOps
                     with ReactiveEntityOps
+                    with FusedMappingsOps
                     with PointExp
                     with RangeOpsExp
 
@@ -56,7 +58,8 @@ trait ScalaGenReactivity extends ScalaGenReactiveBase
     with ScalaGenReactiveEntities
     with ScalaGenVars
     with ScalaGenSignals
-    with ScalaGenDepHolders {
+    with ScalaGenDepHolders
+    with ScalaGenFusedMapping {
 
   val IR: ReactivityExp
   import IR._

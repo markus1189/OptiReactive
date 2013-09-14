@@ -55,6 +55,7 @@ trait ReactivityExp extends Reactivity
 /** */
 trait ScalaGenReactivity extends ScalaGenReactiveBase
     with ScalaGenEffect
+    with ScalaGenExpensiveOps
     with ScalaGenReactiveEntities
     with ScalaGenVars
     with ScalaGenSignals

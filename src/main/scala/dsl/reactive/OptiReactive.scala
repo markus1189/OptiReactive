@@ -52,10 +52,11 @@ trait ReactivityExp extends Reactivity
                     with PointExp
                     with RangeOpsExp
 
-/** */
+/** Provides code generation traits for ReactivityExp constructs */
 trait ScalaGenReactivity extends ScalaGenReactiveBase
     with ScalaGenEffect
     with ScalaGenExpensiveOps
+    with ScalaGenMeasureOps
     with ScalaGenReactiveEntities
     with ScalaGenVars
     with ScalaGenSignals

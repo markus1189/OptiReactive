@@ -78,7 +78,9 @@ trait ScalaGenReactivity extends ScalaGenReactiveBase
 }
 
 /** Like ReactivityExp but with ConstantFolding enabled */
-trait ReactivityExpOpt extends ReactivityExp with ConstantFolding
+trait ReactivityExpOpt extends ReactivityExp
+                       with ConstantFolding
+                       with FusedMappingsOverrides
 
 /** Additional support for ConstantFolding code generation */
 trait ScalaGenReactivityOpt extends ScalaGenReactivity with ScalaGenConstantFolding {

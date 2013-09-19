@@ -23,8 +23,8 @@ class ConstantFoldingSpec extends WordSpec with Matchers {
     }
 
     "replace with a constant if all dependencies are constant" in {
-      val prog = new ShouldBeFolded with ReactiveDSLExp with CompileScala { self =>
-        override val codegen = new ReactiveDSLGen {
+      val prog = new ShouldBeFolded with ReactiveDSLExpOpt with CompileScala { self =>
+        override val codegen = new ReactiveDSLGenOpt {
           val IR: self.type = self
         }
       }
@@ -37,8 +37,8 @@ class ConstantFoldingSpec extends WordSpec with Matchers {
     }
 
     "replace with a constant, if the reactive only depends on other constants" in {
-      val prog = new TransitiveFold with ReactiveDSLExp with CompileScala { self =>
-        override val codegen = new ReactiveDSLGen {
+      val prog = new TransitiveFold with ReactiveDSLExpOpt with CompileScala { self =>
+        override val codegen = new ReactiveDSLGenOpt {
           val IR: self.type = self
         }
       }

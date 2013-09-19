@@ -14,9 +14,16 @@ trait ReactiveDSL extends Reactivity with ScalaOpsPkg with LiftScala
 /** ReactiveDSLExp and ReactiveDSLGen are required for the concrete implementations
   * and the code generation
   */
-trait ReactiveDSLExp extends ReactiveDSL with ReactivityExpOpt with ScalaOpsPkgExp
-trait ReactiveDSLGen extends ScalaGenReactivityOpt with ScalaCodeGenPkg {
+trait ReactiveDSLExp extends ReactiveDSL with ReactivityExp with ScalaOpsPkgExp
+
+trait ReactiveDSLExpOpt extends ReactiveDSL with ReactivityExpOpt with ScalaOpsPkgExp
+
+trait ReactiveDSLGen extends ScalaGenReactivity with ScalaCodeGenPkg {
   val IR: ReactiveDSLExp with ScalaOpsPkgExp
+}
+
+trait ReactiveDSLGenOpt extends ScalaGenReactivityOpt with ScalaCodeGenPkg {
+  val IR: ReactiveDSLExpOpt with ScalaOpsPkgExp
 }
 
 /** This trait defines the accepted syntactic constructs for programs
@@ -33,6 +40,7 @@ trait Reactivity
     with FusedMappings
     with PointSyntax
     with RangeOps
+    with NumericOps
 
 /** This trait has to provide the concrete implementations for the
   * syntactically allowed constructs of the `Reactivity` trait
@@ -51,6 +59,7 @@ trait ReactivityExp extends Reactivity
                     with FusedMappingsOps
                     with PointExp
                     with RangeOpsExp
+                    with NumericOpsExpOpt
 
 /** Provides code generation traits for ReactivityExp constructs */
 trait ScalaGenReactivity extends ScalaGenReactiveBase
@@ -61,7 +70,8 @@ trait ScalaGenReactivity extends ScalaGenReactiveBase
     with ScalaGenVars
     with ScalaGenSignals
     with ScalaGenDepHolders
-    with ScalaGenFusedMapping {
+    with ScalaGenFusedMapping
+    with ScalaGenNumericOps {
 
   val IR: ReactivityExp
   import IR._

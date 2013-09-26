@@ -26,11 +26,12 @@ trait InferredSignalsExp extends InferredSignals with EffectExp {
 
   /* Check the effectSyms of the Block for AccessDepHolder IR nodes */
   def inferReactiveAccess(bdy: Block[_]): List[Exp[DepHolder]] = {
-      val effects = effectSyms(bdy)
-      val onlySyms = effects.filter { case Sym(x) => true; case _ => false }
-      val defs = onlySyms.map(findDefinition(_)).collect {
-        case Some(TP(_,Reflect(AccessDepHolder(access),_,_))) => access
-      }
+    val effects = effectSyms(bdy)
+    val nestedSyms = aliasSyms(bdy).map(findDefinition(_)).map(effectSyms(_)).flatten
+    val onlySyms = (effects ++ nestedSyms).filter { case Sym(x) => true; case _ => false }
+    val defs = onlySyms.map(findDefinition(_)).collect {
+      case Some(TP(_,Reflect(AccessDepHolder(access),_,_))) => access
+    }
 
     defs.asInstanceOf[List[Exp[DepHolder]]].distinct
   }

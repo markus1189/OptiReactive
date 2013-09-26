@@ -23,8 +23,24 @@ trait ConstantFoldingSimple extends ReactiveDSL {
   }
 }
 
+trait ConstantFoldingEvenSimpler extends ReactiveDSL {
+  def f(x : Rep[Unit]) = {
+    printTime()
+    val v1 = ISignal { 42l }
+    val v2 = ISignal { 43l }
+
+    val s1 = ISignal { expensive(v1.get) + expensive(v2.get) }
+    val s2 = ISignal { expensive(v1.get) + expensive(v2.get) }
+
+    val r = ISignal { s1.get + s2.get}
+
+    println(r.get)
+    printTime()
+  }
+}
+
 object Main2 extends App {
-  val optimized = new ConstantFoldingSimple
+  val optimized = new ConstantFoldingEvenSimpler
       with ReactiveDSLExpOpt
       with CompileScala { self =>
 
@@ -33,7 +49,7 @@ object Main2 extends App {
     }
   }
 
-  val normal = new ConstantFoldingSimple
+  val normal = new ConstantFoldingEvenSimpler
       with ReactiveDSLExp
       with CompileScala { self =>
 
@@ -45,4 +61,5 @@ object Main2 extends App {
   optimized.compile(optimized.f).apply()
   optimized.codegen.emitSource(optimized.f, "F", new java.io.PrintWriter(System.out))
   normal.compile(normal.f).apply()
+  normal.codegen.emitSource(normal.f, "F", new java.io.PrintWriter(System.out))
 }

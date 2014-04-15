@@ -4,5 +4,11 @@ scala:
    - 2.10.0
 
 before_install:
+   - curl -s https://raw.github.com/paulp/sbt-extras/master/sbt > sbt
+   - chmod +x sbt
    - git clone https://github.com/TiarkRompf/virtualization-lms-core
-   - (cd virtualization-lms-core; sbt publish-local)
+   - (cd virtualization-lms-core; ../sbt publish-local)
+
+script:
+  - ./sbt compile
+  - ./sbt test
